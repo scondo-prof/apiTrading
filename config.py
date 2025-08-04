@@ -1,5 +1,9 @@
 import os
 
+from dotenv import load_dotenv
+
+load_dotenv()
+
 headers: dict[str, str] = {
     "APCA-API-KEY-ID": os.getenv("APCA_API_KEY_ID"),
     "APCA-API-SECRET-KEY": os.getenv("APCA_API_SECRET_KEY"),
