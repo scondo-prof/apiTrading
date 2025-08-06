@@ -6,7 +6,7 @@ import httpx
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
-from config import headers, paper_trading_base_url
+from alpaca_trading_api.config import headers, paper_trading_base_url
 
 
 def get_the_account(paper_trading: bool) -> dict[str, any]:
