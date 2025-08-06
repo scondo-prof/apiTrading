@@ -6,16 +6,16 @@ import httpx
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
-from alpaca_trading_api.config import headers, paper_trading_base_url
+from config import headers, paper_trading_base_url, trading_base_url
 
 
 def get_the_account(paper_trading: bool) -> dict[str, any]:
     if paper_trading:
-        url = f"{paper_trading_base_url}/account"
+        url: str = f"{paper_trading_base_url}/account"
     else:
-        pass
+        url: str = f"{trading_base_url}/account"
 
-    response_json = httpx.request(method="GET", url=url, headers=headers).json()
+    response_json: dict[str, any] = httpx.request(method="GET", url=url, headers=headers).json()
 
     return response_json
 

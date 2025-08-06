@@ -10,3 +10,5 @@ headers: dict[str, str] = {
 }
 
 paper_trading_base_url: str = "https://paper-api.alpaca.markets/v2"
+
+trading_base_url: str = "https://api.alpaca.markets/v2"
