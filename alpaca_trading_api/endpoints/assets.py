@@ -60,17 +60,33 @@ def get_option_contracts(
     ppind: bool = None,
 ) -> dict[str, any]:
     if paper_trading:
-        url: str = f"{paper_trading_base_url}/options/contracts?underlying_symbols={underlying_symbols};root_symbol={root_symbol};paper_trading={paper_trading};show_deliverables={show_deliverables};status={status};type={type};style={style};limit={limit};"
+        url: str = (
+            f"{paper_trading_base_url}/options/contracts?underlying_symbols={underlying_symbols};root_symbol={root_symbol};paper_trading={paper_trading};show_deliverables={show_deliverables};status={status};type={type};style={style};limit={limit};"
+        )
+        if expiration_date:
+            url += f"expiration_date={expiration_date};"
+        if expiration_date_gte:
+            url += f"expiration_date_gte={expiration_date_gte};"
+        if expiration_date_lte:
+            url += f"expiration_date_lte={expiration_date_lte};"
+        if strike_price_gte:
+            url += f"strike_price_gte={strike_price_gte};"
+        if strike_price_lte:
+            url += f"strike_price_lte={strike_price_lte};"
+        if page_token:
+            url += f"page_token={page_token};"
+        if ppind:
+            url += f"ppind={ppind}"
+
+        url: str = url[:-1]
 
     else:
-        url: str = f"{trading_base_url}/options/contracts?underlying_symbols={underlying_symbols};root_symbol={root_symbol};paper_trading={paper_trading};show_deliverables={show_deliverables};status={status};type={type};style={style};limit={limit};"
+        url: str = (
+            f"{trading_base_url}/options/contracts?underlying_symbols={underlying_symbols};root_symbol={root_symbol};paper_trading={paper_trading};show_deliverables={show_deliverables};status={status};type={type};style={style};limit={limit};"
+        )
 
-    request_json = httpx.request(method="GET", url=url, headers=headers).json()
+    request_json: dict[str, any] = httpx.request(method="GET", url=url, headers=headers).json()
 
-    with open("test.json", "w") as test_file:
-        test_file.write(json.dumps(request_json))
-
-    test_file.close()
     return request_json
 
 
@@ -88,3 +104,5 @@ if __name__ == "__main__":
     # )
 
     # print(get_asset_by_id_or_symbol(symbol_or_asset_id="BCH/USD", paper_trading=True))
+
+    print(get_option_contracts(underlying_symbols="AAPL,SPY", root_symbol="AAPL"))
