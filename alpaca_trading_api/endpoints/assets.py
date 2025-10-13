@@ -58,36 +58,57 @@ def get_option_contracts(
     page_token: str = None,
     limit: int = 100,
     ppind: bool = None,
-) -> dict[str, any]:
+) -> list[dict[str, any]]:
+
+    options_contracts = []
+
     if paper_trading:
         url: str = (
             f"{paper_trading_base_url}/options/contracts?underlying_symbols={underlying_symbols};root_symbol={root_symbol};paper_trading={paper_trading};show_deliverables={show_deliverables};status={status};type={type};style={style};limit={limit};"
         )
-        if expiration_date:
-            url += f"expiration_date={expiration_date};"
-        if expiration_date_gte:
-            url += f"expiration_date_gte={expiration_date_gte};"
-        if expiration_date_lte:
-            url += f"expiration_date_lte={expiration_date_lte};"
-        if strike_price_gte:
-            url += f"strike_price_gte={strike_price_gte};"
-        if strike_price_lte:
-            url += f"strike_price_lte={strike_price_lte};"
-        if page_token:
-            url += f"page_token={page_token};"
-        if ppind:
-            url += f"ppind={ppind}"
-
-        url: str = url[:-1]
-
     else:
         url: str = (
             f"{trading_base_url}/options/contracts?underlying_symbols={underlying_symbols};root_symbol={root_symbol};paper_trading={paper_trading};show_deliverables={show_deliverables};status={status};type={type};style={style};limit={limit};"
         )
 
+    if expiration_date:
+        url += f"expiration_date={expiration_date};"
+    if expiration_date_gte:
+        url += f"expiration_date_gte={expiration_date_gte};"
+    if expiration_date_lte:
+        url += f"expiration_date_lte={expiration_date_lte};"
+    if strike_price_gte:
+        url += f"strike_price_gte={strike_price_gte};"
+    if strike_price_lte:
+        url += f"strike_price_lte={strike_price_lte};"
+    if page_token:
+        url += f"page_token={page_token};"
+    if ppind:
+        url += f"ppind={ppind}"
+
+    url: str = url[:-1]
+
     request_json: dict[str, any] = httpx.request(method="GET", url=url, headers=headers).json()
 
-    return request_json
+    options_contracts += request_json["option_contracts"]
+
+    while request_json["next_page_token"]:
+
+        paginated_url: str = f"{url};page_token={request_json["next_page_token"]}"
+
+        print(f"Paginated Url: {paginated_url}")
+
+        request_json: dict[str, any] = httpx.request(method="GET", url=paginated_url, headers=headers).json()
+
+        options_contracts += request_json["option_contracts"]
+
+        print(f"Page Token: {request_json["next_page_token"]}")
+
+    with open("test.json", "w") as test_file:
+        test_file.write(json.dumps(options_contracts))
+    test_file.close()
+
+    return options_contracts
 
 
 def get_option_contract_by_id_or_symbol():
